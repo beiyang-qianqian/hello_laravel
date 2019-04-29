@@ -11,14 +11,12 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/','StaticPagesController@home');
-Route::get('/help','StaticPagesController@help');
-Route::get('/about','StaticPagesController@about');
+Route::get('/','StaticPagesController@home')->name('home');
+Route::get('/help','StaticPagesController@help')->name('help');
+Route::get('/about','StaticPagesController@about')->name('about');
 
 //laravel中常见的HTTP操作：GET、POST、PATCH、DELETE
+
+Route::get('signup','UsersController@create')->name('signup');
 
 
