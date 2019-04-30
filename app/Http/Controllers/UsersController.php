@@ -28,7 +28,7 @@ class UsersController extends Controller
            'password'=>bcrypt($request->password)
        ]);
        //session()方法访问会话实例      flash只在下一次请求内有效，第一个参数是会话的键，第二个参数是会话的值
-       session()->flash('success','Resiter successful！');  //我们可以在之后使用session()->get('success');
-       return redirect()->route('user.show',[$user]);  //等同于 $user->id
+       session()->flash('success','Register successful！');  //我们可以在之后使用session()->get('success');
+       return redirect()->route('users.show',[$user]);  //等同于 $user->id
    }
 }
