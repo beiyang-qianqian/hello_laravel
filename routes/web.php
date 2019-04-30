@@ -18,5 +18,6 @@ Route::get('/about','StaticPagesController@about')->name('about');
 //laravel中常见的HTTP操作：GET、POST、PATCH、DELETE
 
 Route::get('signup','UsersController@create')->name('signup');
+Route::resource('users','UsersController');
 
 
