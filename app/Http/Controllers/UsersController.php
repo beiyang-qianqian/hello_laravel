@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
@@ -27,6 +28,7 @@ class UsersController extends Controller
            'email'=>$request->email,
            'password'=>bcrypt($request->password)
        ]);
+       Auth::login($user);
        //session()方法访问会话实例      flash只在下一次请求内有效，第一个参数是会话的键，第二个参数是会话的值
        session()->flash('success','Register successful！');  //我们可以在之后使用session()->get('success');
        return redirect()->route('users.show',[$user]);  //等同于 $user->id
