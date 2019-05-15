@@ -8,7 +8,15 @@ use Illuminate\Support\Facades\Auth;
 
 class UsersController extends Controller
 {
-   public function create(){
+
+    public function __construct()
+    {
+        $this->middleware('auth',['except'=>['show','edit','store']]);
+        //只让未登录的用户访问注册用户页面
+        $this->middleware('guest',['only'=>['create']]);
+    }
+
+    public function create(){
        return view('users.create');
    }
 
@@ -34,6 +42,7 @@ class UsersController extends Controller
        return redirect()->route('users.show',[$user]);  //等同于 $user->id
    }
    public function edit(User $user){
+       $this->authorize('update',$user);
        return view('users.edit',compact('user'));
    }
 
@@ -43,6 +52,7 @@ class UsersController extends Controller
            'password'=>'nullable|confirmed|min:6',
            ]
        );
+       $this->authorize('update',$user);
        $data=[];
        $data['name']=$request->name;
        if($request->password){

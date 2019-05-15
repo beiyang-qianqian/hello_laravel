@@ -7,6 +7,13 @@ use Illuminate\Support\Facades\Auth;
 
 class SessionsController extends Controller
 {
+
+    public function __construct()
+    {
+        //只让未登录用户访问登录页面
+        $this->middleware('guest',['only'=>['create']]);
+    }
+
     public function create(){
         return view('sessions.create');
     }
