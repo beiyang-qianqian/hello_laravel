@@ -31,7 +31,7 @@ class SessionsController extends Controller
             session()->flash('success','欢迎回来！');
 
             // Auth::user()  获取当前登录用户信息
-            return redirect()->route('users.show',[Auth::user()]);
+            return redirect()->intended(route('users.show',[Auth::user()]));
         }else{
             //登录失败
             session()->flash('danger','抱歉，输入的邮箱或密码错误！');
