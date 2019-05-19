@@ -7,7 +7,7 @@
             @foreach ($users as $user)
                 {{--所有在浮视图中可用的变量在被引入的视图中都是可用的--}}
                {{--@include('users._user',['user'=>$user]);--}}{{-- 等同于下面的写法--}}
-               @include('users._user');
+               @include('users._user')
             @endforeach
         </ul>
         {!! $users->render() !!}

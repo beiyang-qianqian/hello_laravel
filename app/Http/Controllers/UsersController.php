@@ -11,7 +11,8 @@ class UsersController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth',['except'=>['show','create','store']]);
+        //除了except指定的动作，其他动作需要登录后才能使用
+        $this->middleware('auth',['except'=>['show','create','store','index']]);
         //只让未登录的用户访问注册用户页面
         $this->middleware('guest',['only'=>['create']]);
     }
@@ -65,5 +66,13 @@ class UsersController extends Controller
        $user->update($data);
        session()->flash('success','个人资料更新成功');
        return redirect()->route('users.show',$user->id);
+   }
+
+   public function destroy(User $user){
+       //对删除操作进行授权验证
+       $this->authorize('destroy',$user);
+       $user->delete();
+       session()->flash('success','删除成功');
+       return back();
    }
 }
