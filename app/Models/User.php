@@ -31,6 +31,16 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    //该方法在用户模型完成初始化后进行加载 ，因此监听事件需放在这里
+    public static function boot(){
+        parent::boot();
+
+        //在用户创建（注册）前生成激活令牌
+        static::creating(function($user){
+            $user->activation_token=str_random(30);
+        });
+    }
+
     public function gravatar($size=100){
         $hash=md5(strtolower(trim($this->attributes['email'])));
         return "http://gravatar.com/avatar/$hash?s=$size";

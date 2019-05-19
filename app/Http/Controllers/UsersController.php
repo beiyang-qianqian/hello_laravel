@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Mail;
 
 class UsersController extends Controller
 {
@@ -12,7 +13,7 @@ class UsersController extends Controller
     public function __construct()
     {
         //除了except指定的动作，其他动作需要登录后才能使用
-        $this->middleware('auth',['except'=>['show','create','store','index']]);
+        $this->middleware('auth',['except'=>['show','create','store','index','confirmEmail']]);
         //只让未登录的用户访问注册用户页面
         $this->middleware('guest',['only'=>['create']]);
     }
@@ -41,10 +42,16 @@ class UsersController extends Controller
            'email'=>$request->email,
            'password'=>bcrypt($request->password)
        ]);
-       Auth::login($user);
+
+       $this->sendEmailConfirmationTo($user);
+       session()->flash('success','验证邮件已发送到您注册的邮箱里，请注意查收。');
+       return redirect('/');//激活邮件发送成功后，会将用户重定向到首页
+
+
+       //Auth::login($user);
        //session()方法访问会话实例      flash只在下一次请求内有效，第一个参数是会话的键，第二个参数是会话的值
-       session()->flash('success','Register successful！');  //我们可以在之后使用session()->get('success');
-       return redirect()->route('users.show',[$user]);  //等同于 $user->id
+     //  session()->flash('success','Register successful！');  //我们可以在之后使用session()->get('success');
+      // return redirect()->route('users.show',[$user]);  //等同于 $user->id
    }
    public function edit(User $user){
        $this->authorize('update',$user);
@@ -75,4 +82,32 @@ class UsersController extends Controller
        session()->flash('success','删除成功');
        return back();
    }
+
+   //发送邮件给指定用户，用户注册成功后悔调用此方法发送邮件
+   public function sendEmailConfirmationTo($user){
+        $view='emails.confirm';//邮件消息的视图名称
+        $data=compact('user');//传递给该视图的数据数组
+        $from='aufree@qq.com';//发送者
+        $name='Aufree';
+        $to=$user->email;//接收者
+        $subject='感谢注册 Homestead应用！请确认您的邮箱。';//邮件主题
+
+      Mail::send($view,$data,function ($message) use ($from,$name,$to,$subject){
+           $message->from($from,$name)->to($to)->subject($subject);
+       });
+
+   }
+
+   //完成用户的激活操作
+    public function confirmEmail($token){
+       $user=User::where('activation_token',$token)->firstOrfail();//查询不到返回404
+
+       $user->activated=true;//改为激活状态
+       $user->activation_token=null;//清空激活令牌
+       $user->save();
+
+       Auth::login($user);
+       session()->flash('success','恭喜你，激活成功！');
+       return redirect()->route('users.show',[$user]);
+    }
 }
